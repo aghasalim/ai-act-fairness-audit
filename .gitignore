@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# IEEE-CIS is not redistributable. Row-level predictions derived from it stay
+# local; `make export` regenerates them. Aggregate findings in reports/ are
+# committed.
+data/*.parquet

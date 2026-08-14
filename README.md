@@ -1,0 +1,179 @@
+# Auditing my own fraud model against the EU AI Act
+
+[![ci](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml)
+[![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+A fairness audit of the LightGBM fraud model from
+[ieee-fraud-ml](https://github.com/aghasalim/ieee-fraud-ml), against the text of
+Regulation (EU) 2024/1689 from
+[eu-ai-act-rag](https://github.com/aghasalim/eu-ai-act-rag). Auditing my own
+model, using my own corpus of the law, so nobody grades the homework but the
+primary source.
+
+Predictions are the honest ones — chronological folds, 30-day embargo,
+fold-local encodings. Auditing a leaky split would measure the leak.
+
+---
+
+## I started from a premise that turned out to be false
+
+I began this convinced that fraud scoring is a textbook Annex III high-risk
+system. It is not. **Annex III, point 5(b)** covers creditworthiness scoring
+**"with the exception of AI systems used for the purpose of detecting financial
+fraud"**.
+
+Fraud detection is expressly carved out. This model is not high-risk, Article
+10's bias-examination duty does not bind it, and **this audit was never legally
+required**.
+
+Which makes the result more interesting than compliance paperwork. A model that
+blocks legitimate customers at **793× different rates** across product lines,
+and catches **1.4%** of the fraud in the 82% of transactions without identity
+data, passes through the Regulation's high-risk net untouched.
+
+I am not claiming the carve-out is a mistake — anti-fraud has an obvious
+rationale, since explaining detection to the people being detected defeats it.
+The narrower point is that **"not high-risk" describes a regulatory category,
+not whether anyone is harmed.** A false positive is a declined card for a real
+person regardless of which annex applies.
+
+---
+
+## The limitation that decides what this audit can conclude
+
+**IEEE-CIS contains no protected attributes.** No race, sex, age or nationality.
+So every segment below is a *proxy* — debit vs credit, free webmail vs
+corporate, mobile vs desktop, transaction size.
+
+Proxies can prove error is distributed unevenly. They **cannot** tell you whether
+that unevenness tracks a protected characteristic. You cannot audit an attribute
+you never collected, and no method repairs that.
+
+The Act anticipates exactly this. **Article 10(5)** lets providers process
+special-category data *specifically for bias detection*, gated on the test that
+"bias detection and correction cannot be effectively fulfilled by processing
+other data". It treats not-knowing as a problem to solve rather than a defence —
+which is the opposite of how "we don't collect race" is usually deployed in an
+argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
+
+---
+
+## What the audit found
+
+Measured at a **1% alert budget** — one global threshold flagging 1% of
+transactions — because that is how a review queue works. Parity measured at
+p>0.5, where almost nothing is flagged, would report near-perfect fairness for a
+model nobody uses that way.
+
+| segment | FPR ratio | worst | best | four-fifths |
+|---|---|---|---|---|
+| product code | **793×** | C | W | fails |
+| device type | 92× | mobile | unknown | fails |
+| identity present | 90× | yes | no | fails |
+| region | 52× | other | 87 | fails |
+| email class | 7.6× | free webmail | missing | fails |
+| card type | 5.0× | credit | debit | fails |
+| amount band | 4.4× | Q1 lowest | Q2 | fails |
+
+Every segment fails the four-fifths rule. **I do not think that means what it
+looks like**, and saying so is the difference between an audit and an
+accusation: selection rates track base rates, which genuinely differ 5.7× across
+these groups. A single-threshold ranker mechanically flags more of the groups
+that offend more. Most of this table is arithmetic, not discrimination.
+
+Two findings survive that objection.
+
+### The group treated "best" is the one the model fails
+
+Transactions with no identity record — **361,483 rows, 82% of volume** — have
+the *lowest* false-positive rate of any segment, 0.0001. On an FPR-only audit
+they look like the best-served group in the dataset.
+
+| | identity present | no identity |
+|---|---|---|
+| n | 81,422 | **361,483** |
+| base fraud rate | 11.1% | 2.1% |
+| FPR | 0.0061 | **0.0001** |
+| **TPR (fraud caught)** | 42.6% | **1.4%** |
+| fraud missed | 5,187 | **7,626** |
+
+They are not well served. They are **unpoliced**: the model essentially never
+flags them, so it neither wrongly blocks them nor catches the 7,626 frauds they
+carry — more absolute fraud than the segment it works on. Low FPR here is a
+symptom of a model that has nothing to say about 82% of its traffic.
+
+An audit reporting only false positives — the standard framing, since FPs are
+the harm to the innocent — would have called this the fairest segment.
+
+### At matched base rates, high-value fraud is missed twice as often
+
+Amount quartiles Q1 and Q4 have near-identical fraud rates, so base-rate
+arithmetic cannot explain a gap between them:
+
+| | Q1 lowest | Q4 highest |
+|---|---|---|
+| base fraud rate | 4.62% | 4.78% |
+| **TPR** | **34.3%** | **17.1%** |
+| fraud missed | 3,385 | **4,313** |
+
+Same prevalence, half the detection. The model is markedly worse at the
+transactions that cost the most when missed.
+
+---
+
+## The impossibility, measured rather than cited
+
+Equal selection rates, equal false-positive rates, and a calibrated score cannot
+hold together when base rates differ. That is a theorem
+(Kleinberg et al. 2016; Chouldechova 2017), and it is usually where the
+conversation stops. Base rates here differ 5.7×, so it is a live constraint —
+so I built all three deployable policies and measured what each costs:
+
+| policy | selection spread | FPR spread | same score → same decision? |
+|---|---|---|---|
+| one global threshold | 6.74pp | 0.91pp | **yes** |
+| equal selection rate | **0.01pp** | 2.21pp | no |
+| equal FPR | 3.26pp | **0.01pp** | no |
+
+Equalising selection rates **more than doubles** the FPR gap (0.91 → 2.21pp) —
+the intuitive fix makes the harm-to-innocents disparity worse. And both
+equalising policies require different thresholds per group, so an identical
+score produces a different decision depending on which group you fall in.
+
+There is no fair row. Choosing between them is a policy decision about who
+absorbs the error, and the Regulation does not make it for you — Article
+10(2)(f) requires that you *examine* it, not that you land anywhere particular.
+
+---
+
+## Running it
+
+```bash
+make setup && make audit
+```
+
+`make audit` needs `data/scored.parquet`. Regenerate it from a checkout of the
+model repo:
+
+```bash
+FRAUD_REPO=~/ieee-fraud-ml make export
+```
+
+Row-level predictions are gitignored — IEEE-CIS is not redistributable, so this
+repo commits aggregate results only. `make test` runs without any of it.
+
+## What is not here
+
+- **No claim about protected attributes.** See above; the data has none.
+- **No mitigation shipped as a recommendation.** The impossibility table shows
+  the options and their costs; picking one is a business decision I am not in a
+  position to make on someone's behalf.
+- **No causal claim.** These are associations between segment membership and
+  error rates. Whether the model *causes* the disparity, or inherits it from how
+  the data was collected, is not answerable from this dataset.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Quoted provisions of Regulation (EU) 2024/1689 are
+official EU legal texts.

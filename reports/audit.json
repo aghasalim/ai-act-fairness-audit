@@ -1,0 +1,151 @@
+{
+  "n": 442905,
+  "budget": 0.01,
+  "threshold": 0.7252586003387556,
+  "segments": {
+    "card_type": {
+      "n_groups": 3,
+      "selection_min": 0.005040832497580459,
+      "selection_max": 0.027138886651091598,
+      "disparate_impact_ratio": 0.18574205207411126,
+      "FPR_min": 0.0005910059100591006,
+      "FPR_max": 0.0029372116217134467,
+      "FPR_ratio": 4.969851522161133,
+      "FPR_gap_pp": 0.2346205711654346,
+      "FNR_gap_pp": 12.509678813716384,
+      "AUC_min": 0.7787305040274096,
+      "AUC_max": 0.7992327587703311,
+      "worst_FPR_group": "credit",
+      "best_FPR_group": "debit",
+      "passes_four_fifths": false
+    },
+    "email_class": {
+      "n_groups": 3,
+      "selection_min": 0.0026461089696843423,
+      "selection_max": 0.01272285125695079,
+      "disparate_impact_ratio": 0.20798081469660434,
+      "FPR_min": 0.00018615307510560608,
+      "FPR_max": 0.0014117449425933464,
+      "FPR_ratio": 7.5837852358466415,
+      "FPR_gap_pp": 0.12255918674877403,
+      "FNR_gap_pp": 19.6176381565111,
+      "AUC_min": 0.7177656386809692,
+      "AUC_max": 0.8071844546839355,
+      "worst_FPR_group": "free webmail",
+      "best_FPR_group": "missing",
+      "passes_four_fifths": false
+    },
+    "device_type": {
+      "n_groups": 3,
+      "selection_min": 0.0003734615459094895,
+      "selection_max": 0.05960825524710278,
+      "disparate_impact_ratio": 0.006265265513330745,
+      "FPR_min": 6.78452901234219e-05,
+      "FPR_max": 0.00626157212590473,
+      "FPR_ratio": 92.2919205520956,
+      "FPR_gap_pp": 0.6193726835781308,
+      "FNR_gap_pp": 43.03702510261126,
+      "AUC_min": 0.7078778374040621,
+      "AUC_max": 0.8531553871811693,
+      "worst_FPR_group": "mobile",
+      "best_FPR_group": "unknown",
+      "passes_four_fifths": false
+    },
+    "product_code": {
+      "n_groups": 5,
+      "selection_min": 8.159498500340448e-05,
+      "selection_max": 0.0674491454855466,
+      "disparate_impact_ratio": 0.0012097260004708158,
+      "FPR_min": 1.1493691400132752e-05,
+      "FPR_max": 0.009117158902303163,
+      "FPR_ratio": 793.2315724257099,
+      "FPR_gap_pp": 0.910566521090303,
+      "FNR_gap_pp": 46.15311732193648,
+      "AUC_min": 0.7029643389667678,
+      "AUC_max": 0.8719856853361748,
+      "worst_FPR_group": "C",
+      "best_FPR_group": "W",
+      "passes_four_fifths": false
+    },
+    "identity_present": {
+      "n_groups": 2,
+      "selection_min": 0.0003734615459094895,
+      "selection_max": 0.05274987104222446,
+      "disparate_impact_ratio": 0.007079857040987766,
+      "FPR_min": 6.78452901234219e-05,
+      "FPR_max": 0.00613395225464191,
+      "FPR_ratio": 90.41087809460653,
+      "FPR_gap_pp": 0.6066106964518487,
+      "FNR_gap_pp": 41.174319689877755,
+      "AUC_min": 0.7078778374040621,
+      "AUC_max": 0.8479745141424684,
+      "worst_FPR_group": "yes",
+      "best_FPR_group": "no",
+      "passes_four_fifths": false
+    },
+    "amount_band": {
+      "n_groups": 4,
+      "selection_min": 0.005934929011852089,
+      "selection_max": 0.01809471691681095,
+      "disparate_impact_ratio": 0.3279923659009125,
+      "FPR_min": 0.0005292453691030203,
+      "FPR_max": 0.002351458374483855,
+      "FPR_ratio": 4.443040056201477,
+      "FPR_gap_pp": 0.18222130053808344,
+      "FNR_gap_pp": 17.175915206172032,
+      "AUC_min": 0.762465086443785,
+      "AUC_max": 0.8464805872213749,
+      "worst_FPR_group": "Q1 lowest",
+      "best_FPR_group": "Q2",
+      "passes_four_fifths": false
+    },
+    "region": {
+      "n_groups": 3,
+      "selection_min": 0.002503486999749651,
+      "selection_max": 0.06797559139358877,
+      "disparate_impact_ratio": 0.03682920513709236,
+      "FPR_min": 0.00017309659314432584,
+      "FPR_max": 0.008996697414873021,
+      "FPR_ratio": 51.975011474499006,
+      "FPR_gap_pp": 0.8823600821728694,
+      "FNR_gap_pp": 37.224557596414385,
+      "AUC_min": 0.7296694386727861,
+      "AUC_max": 0.8740002464183652,
+      "worst_FPR_group": "-1",
+      "best_FPR_group": "87",
+      "passes_four_fifths": false
+    }
+  },
+  "impossibility": {
+    "segment": "product_code",
+    "budget": 0.01,
+    "target_selection": 0.028011641596849657,
+    "target_fpr": 0.0028227043114781953,
+    "policies": {
+      "equal FPR": {
+        "selection_spread_pp": 3.256251229091378,
+        "FPR_spread_pp": 0.009531869883377822,
+        "TPR_spread_pp": 41.00017342548098,
+        "threshold_spread": 0.7618108608810747,
+        "same_score_same_decision": false,
+        "fraud_caught": 3273
+      },
+      "equal selection rate": {
+        "selection_spread_pp": 0.010981347990614287,
+        "FPR_spread_pp": 2.2147561987468625,
+        "TPR_spread_pp": 18.03218083233575,
+        "threshold_spread": 0.9167635071707645,
+        "same_score_same_decision": false,
+        "fraud_caught": 4136
+      },
+      "global threshold": {
+        "selection_spread_pp": 6.73675505005432,
+        "FPR_spread_pp": 0.910566521090303,
+        "TPR_spread_pp": 46.15311732193646,
+        "threshold_spread": 0.0,
+        "same_score_same_decision": true,
+        "fraud_caught": 3962
+      }
+    }
+  }
+}
