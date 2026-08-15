@@ -8,3 +8,5 @@ __pycache__/
 # local; `make export` regenerates them. Aggregate findings in reports/ are
 # committed.
 data/*.parquet
+.env
+.env.local
