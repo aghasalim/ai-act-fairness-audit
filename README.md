@@ -16,7 +16,40 @@ fold-local encodings. Auditing a leaky split would measure the leak.
 
 ---
 
-## I started from a premise that turned out to be false
+
+---
+
+## Abstract
+
+The EU AI Act obliges providers of high-risk systems to assess discriminatory
+impact. This work audits a fraud-detection model I built myself, on 442,905
+transactions, under a fixed 1% review budget — so the threshold is
+the operational one rather than one chosen to make the audit look good.
+
+7 of the 7 available segments fall below the four-fifths disparate-impact
+threshold, the worst at 0.19. More usefully, selection-rate parity turns out to be
+the wrong thing to look at: false-negative gaps are an order of magnitude larger
+than false-positive gaps in every segment, and it is the false negative a customer
+experiences.
+
+The impossibility result is measured on this model rather than cited. Equalising
+selection rate, equalising false-positive rate and holding a single global
+threshold are three policies; each satisfies its own criterion and breaks the
+other two, because the groups have different base rates. Choosing between them is
+a decision about who bears which error, and no amount of tuning removes it.
+
+The audit's own limitation is stated up front: none of the available segments is a
+protected characteristic under the Act. Card type and device type are proxies at
+best, so this demonstrates the machinery rather than discharging the obligation.
+
+**Contributions.** (i) An audit at the operational review budget. (ii) Error-rate
+gaps reported alongside selection-rate parity. (iii) The impossibility theorem
+instantiated on a real model. (iv) A stated scope limit about what the available
+segments can and cannot support.
+
+---
+
+## 1. I started from a premise that turned out to be false
 
 I began this convinced that fraud scoring is a textbook Annex III high-risk
 system. It is not. **Annex III, point 5(b)** covers creditworthiness scoring
@@ -40,7 +73,7 @@ person regardless of which annex applies.
 
 ---
 
-## The limitation that decides what this audit can conclude
+## 2. The limitation that decides what this audit can conclude
 
 **IEEE-CIS contains no protected attributes.** No race, sex, age or nationality.
 So every segment below is a *proxy* — debit vs credit, free webmail vs
@@ -59,7 +92,19 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 
 ---
 
-## What the audit found
+## 3. What the audit found
+
+![every segment against the four-fifths rule](reports/figures/four-fifths.png)
+
+![false-positive and false-negative gaps](reports/figures/error-gaps.png)
+
+The second figure is the one that changed how I read the first. Selection-rate
+parity says nothing about who bears the errors, and the false-negative gap is an
+order of magnitude larger in every segment.
+
+![the worst segment, group by group](reports/figures/worst-segment.png)
+
+![calibration by group across every segment](reports/figures/calibration.png)
 
 Measured at a **1% alert budget** — one global threshold flagging 1% of
 transactions — because that is how a review queue works. Parity measured at
@@ -122,7 +167,9 @@ transactions that cost the most when missed.
 
 ---
 
-## The impossibility, measured rather than cited
+## 4. The impossibility, measured rather than cited
+
+![three fairness policies, each breaking the other two](reports/figures/impossibility.png)
 
 Equal selection rates, equal false-positive rates, and a calibrated score cannot
 hold together when base rates differ. That is a theorem
@@ -147,7 +194,7 @@ absorbs the error, and the Regulation does not make it for you — Article
 
 ---
 
-## Running it
+## 5. Running it
 
 ```bash
 make setup && make audit
@@ -163,7 +210,7 @@ FRAUD_REPO=~/ieee-fraud-ml make export
 Row-level predictions are gitignored — IEEE-CIS is not redistributable, so this
 repo commits aggregate results only. `make test` runs without any of it.
 
-## What is not here
+## 6. Limitations
 
 - **No claim about protected attributes.** See above; the data has none.
 - **No mitigation shipped as a recommendation.** The impossibility table shows
@@ -173,7 +220,7 @@ repo commits aggregate results only. `make test` runs without any of it.
   error rates. Whether the model *causes* the disparity, or inherits it from how
   the data was collected, is not answerable from this dataset.
 
-## License
+## 7. Licence
 
 MIT — see [LICENSE](LICENSE). Quoted provisions of Regulation (EU) 2024/1689 are
 official EU legal texts.
