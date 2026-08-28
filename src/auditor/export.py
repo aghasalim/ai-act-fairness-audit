@@ -4,8 +4,8 @@ Run locally; the output is gitignored. IEEE-CIS data is not redistributable, so
 this repo commits only aggregated audit results. The synthetic fallback in
 `data.py` keeps the analysis code runnable and testable without it.
 
-Predictions come from the model repo's *honest* configuration -- chronological
-folds with a 30-day embargo -- because auditing predictions from a leaky split
+Predictions come from the model repo's *honest* configuration, chronological
+folds with a 30-day embargo, because auditing predictions from a leaky split
 would measure the leak.
 """
 from __future__ import annotations
@@ -67,7 +67,7 @@ def main() -> None:
             "  then re-run with FRAUD_REPO=/path/to/ieee-fraud-ml"
         )
     # Run inside the model repo, using its own interpreter. Importing it here
-    # would collide -- both repos have a top-level `src` package -- and this way
+    # would collide: both repos have a top-level `src` package: and this way
     # the audit depends on the model's *output*, not on its dependencies.
     print("regenerating out-of-fold predictions (honest split, 30-day embargo)...")
     raw = config.DATA / "_oof_raw.parquet"

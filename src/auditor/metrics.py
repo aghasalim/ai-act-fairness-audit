@@ -7,13 +7,13 @@ flagged, would report near-perfect fairness for a model nobody uses that way.
 
 Which metric matters depends on who is harmed:
 
-- **False positive rate** -- a legitimate customer is blocked. In fraud this is
+- **False positive rate**, a legitimate customer is blocked. In fraud this is
   the harm that lands on the innocent, so FPR parity is the headline.
-- **False negative rate** -- fraud gets through. The cost falls on the merchant
+- **False negative rate**, fraud gets through. The cost falls on the merchant
   or the bank, not the customer whose group it is.
-- **Selection rate** -- the share of a group flagged at all, regardless of
+- **Selection rate**, the share of a group flagged at all, regardless of
   correctness. This is what a disparate-impact claim is usually built on.
-- **Calibration** -- whether a score of 0.3 means the same thing in every group.
+- **Calibration**, whether a score of 0.3 means the same thing in every group.
 
 These cannot all be equalised at once when base rates differ. That is a theorem,
 and `impossibility.py` measures it on this model rather than citing it.

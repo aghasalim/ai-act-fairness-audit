@@ -11,13 +11,13 @@ constraint is live. This module builds three deployable threshold policies and
 measures what each one costs, so the trade-off is a table a manager can choose
 from rather than an abstraction:
 
-1. **one global threshold** -- what the model repo actually ships
-2. **equalised selection rate** -- every group flagged at the same rate
-3. **equalised FPR** -- every group's innocent customers wrongly blocked at the
+1. **one global threshold**, what the model repo actually ships
+2. **equalised selection rate**, every group flagged at the same rate
+3. **equalised FPR**, every group's innocent customers wrongly blocked at the
    same rate
 
 None of the three is "the fair one". Picking between them is a policy decision
-about who absorbs the error, and the AI Act does not make it for you -- it
+about who absorbs the error, and the AI Act does not make it for you, it
 requires that you examine it (Art. 10(2)(f)) and document what you chose.
 """
 from __future__ import annotations
