@@ -27,9 +27,10 @@ transactions, under a fixed 1% review budget, so the threshold is
 the operational one rather than one chosen to make the audit look good.
 
 7 of the 7 available segments fall below the four-fifths disparate-impact
-threshold, the worst at 0.19. More usefully, selection-rate parity turns out to be
-the wrong thing to look at: false-negative gaps are an order of magnitude larger
-than false-positive gaps in every segment, and it is the false negative a customer
+threshold. The worst is product code at 0.0012, which is 661 times below the
+0.8 line. More usefully, selection-rate parity turns out to be the wrong thing
+to look at: false-negative gaps are an order of magnitude larger than
+false-positive gaps in every segment, and it is the false negative a customer
 experiences.
 
 The impossibility result is measured on this model rather than cited. Equalising
