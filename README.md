@@ -134,7 +134,7 @@ Full detail in [notes/METHODS.md](notes/METHODS.md#4-the-impossibility-measured-
 make setup && make audit
 ```
 
-`make audit` needs`data/scored.parquet`. Regenerate it from a checkout of the
+`make audit` needs `data/scored.parquet`. Regenerate it from a checkout of the
 model repo:
 
 ```bash
@@ -142,7 +142,7 @@ FRAUD_REPO=~/ieee-fraud-ml make export
 ```
 
 Row-level predictions are gitignored, IEEE-CIS is not redistributable, so this
-repo commits aggregate results only.`make test` runs without any of it.
+repo commits aggregate results only. `make test` runs without any of it.
 
 ## 6. Limitations
 
