@@ -6,17 +6,17 @@ Long form detail moved out of the README.
 ## 3. What the audit found
 
 
-![every segment against the four-fifths rule](reports/figures/four-fifths.png)
+![every segment against the four-fifths rule](../reports/figures/four-fifths.png)
 
-![false-positive and false-negative gaps](reports/figures/error-gaps.png)
+![false-positive and false-negative gaps](../reports/figures/error-gaps.png)
 
 The second figure is the one that changed how I read the first. Selection-rate
 parity says nothing about who bears the errors, and the false-negative gap is an
 order of magnitude larger in every segment.
 
-![the worst segment, group by group](reports/figures/worst-segment.png)
+![the worst segment, group by group](../reports/figures/worst-segment.png)
 
-![calibration by group across every segment](reports/figures/calibration.png)
+![calibration by group across every segment](../reports/figures/calibration.png)
 
 Measured at a **1% alert budget**: one global threshold flagging 1% of
 transactions, because that is how a review queue works. Parity measured at
@@ -69,7 +69,7 @@ the harm to the innocent, would have called this the fairest segment.
 ## 4. The impossibility, measured rather than cited
 
 
-![three fairness policies, each breaking the other two](reports/figures/impossibility.png)
+![three fairness policies, each breaking the other two](../reports/figures/impossibility.png)
 
 Equal selection rates, equal false-positive rates, and a calibrated score cannot
 hold together when base rates differ. That is a theorem
