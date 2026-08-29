@@ -94,7 +94,15 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 ---
 
 ## 3. What the audit found
-The second figure is the one that changed how I read the first.
+
+At the 1% alert budget all seven segments fail the four-fifths rule, and the
+worst is product code, where the false-positive rate runs 793 times higher for
+product C than for product W. Most of that is arithmetic rather than
+discrimination: one global threshold flags more of the groups that offend more,
+and base rates across product codes run from 2.1% to 12.8%. The second figure
+is the one that changed how I read the first. False-negative gaps are an order
+of magnitude larger than false-positive gaps in every segment, 46.2 points
+against 0.9 points for product code.
 
 ![every segment against the four-fifths rule](reports/figures/four-fifths.png)
 ![false-positive and false-negative gaps](reports/figures/error-gaps.png)
@@ -103,7 +111,13 @@ The second figure is the one that changed how I read the first.
 
 Full detail in [notes/METHODS.md](notes/METHODS.md#3-what-the-audit-found).
 ### The group treated "best" is the one the model fails
-Transactions with no identity record, **361,483 rows, 82% of volume**: have the *lowest* false-positive rate of any segment, 0.0001.
+Transactions with no identity record, **361,483 rows, 82% of volume**: have the
+*lowest* false-positive rate of any segment, 0.0001. That looks like the
+best-served group in the data and it is not. The model catches **1.4%** of the
+fraud there against 42.6% where identity is present, so **7,626** frauds go
+through, more in absolute terms than the 5,187 missed in the segment the model
+actually works on. The low false-positive rate is a model with nothing to say
+about 82% of its traffic.
 
 Full detail in [notes/METHODS.md](notes/METHODS.md#the-group-treated-best-is-the-one-the-model-fails).
 ### At matched base rates, high-value fraud is missed twice as often
@@ -123,7 +137,15 @@ transactions that cost the most when missed.
 ---
 
 ## 4. The impossibility, measured rather than cited
-Equal selection rates, equal false-positive rates, and a calibrated score cannot hold together when base rates differ.
+
+Equal selection rates, equal false-positive rates, and a calibrated score cannot
+hold together when base rates differ. I built all three policies on product code
+and measured what each one costs. One global threshold leaves a **6.74pp**
+spread in selection rate; equalising selection rate closes that to 0.01pp but
+more than doubles the false-positive spread, 0.91pp to **2.21pp**; equalising
+false-positive rate closes that gap to 0.01pp and opens a 3.26pp selection
+spread instead. Both equalising policies need a different threshold per group,
+so the same score gets a different decision depending on which group you are in.
 
 ![three fairness policies, each breaking the other two](reports/figures/impossibility.png)
 
