@@ -16,3 +16,44 @@ jobs:
       # redistributed, so CI verifies the arithmetic, not the findings.
       - run: pip install -r requirements.txt
       - run: python -m pytest tests/ -q
+
+  verify:
+    # Recompute the published numbers in seven other languages and require
+    # agreement. See verify/verify.sh and the README section on it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install R if the runner does not already have it
+        run: |
+          command -v Rscript || {
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends r-base-core
+          }
+      - name: every toolchain must be present, not silently skipped
+        run: |
+          for t in sqlite3 cc go Rscript cargo node java; do
+            command -v "$t" >/dev/null || { echo "missing $t"; exit 1; }
+          done
+      - name: recompute every published number
+        run: ./verify/verify.sh
+
+      # A suite that cannot fail is not a suite. Corrupt one published rate,
+      # require rejection, put it back, require a pass.
+      - name: the checks must reject a corrupted results file
+        run: |
+          sed -i 's/0\.009117158902303163/0.009/' reports/segment_product_code.csv
+          git diff --exit-code reports/segment_product_code.csv && {
+            echo "the corruption did not change the file"; exit 1; }
+          if ./verify/verify.sh; then
+            echo "a corrupted false-positive rate passed verification"
+            exit 1
+          fi
+          git checkout -- reports/segment_product_code.csv
+          ./verify/verify.sh

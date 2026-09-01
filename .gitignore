@@ -10,3 +10,7 @@ __pycache__/
 data/*.parquet
 .env
 .env.local
+
+# Build products of the verification implementations in verify/.
+verify/*/target/
+verify/*.class
