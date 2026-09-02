@@ -12,7 +12,9 @@ model, using my own corpus of the law, so nobody grades the homework but the
 primary source.
 
 Predictions are the honest ones, chronological folds, 30-day embargo,
-fold-local encodings. Auditing a leaky split would measure the leak.
+fold-local encodings. Auditing a leaky split would measure the leak. Every number
+published here is recomputed from the committed segment tables by independent
+programs in `verify/`, and CI fails the build if any of them disagrees.
 
 ---
 
@@ -166,52 +168,7 @@ FRAUD_REPO=~/ieee-fraud-ml make export
 Row-level predictions are gitignored, IEEE-CIS is not redistributable, so this
 repo commits aggregate results only. `make test` runs without any of it.
 
-## 6. Everything here is computed at least twice
-
-Every number above came out of one pandas implementation in `src/auditor`. The
-tables, the figures and the sentences all read that same output, so if
-`disparity()` had divided by the wrong denominator, or `group_metrics()` had
-swapped FPR and FNR, nothing in the repo would have noticed. `tests/` checks the
-metric functions on small hand-built cases. It does not check the numbers this
-README publishes.
-
-So those numbers are recomputed by seven programs in seven other languages, none
-of which share code with the audit or with each other. `verify/verify.sh` runs
-them all, skips a language whose toolchain is missing, and exits non-zero if any
-of them disagrees. CI runs it, then corrupts a false-positive rate in
-`reports/segment_product_code.csv` and requires the suite to reject it.
-
-The rawest thing this repo can commit is the segment tables, because IEEE-CIS is
-not redistributable and row-level predictions stay local. That turns out to be
-enough. Every rate in those tables is a ratio of whole rows, so the integer
-confusion matrix behind it can be recovered exactly, and the rest follows from
-those integers.
-
-| language | file | what it recomputes, and from what | measured agreement |
-|---|---|---|---|
-| SQL | `verify/summary.sql` | all 77 numeric fields of `reports/audit.json` from the seven segment tables, plus the extreme group names, the four-fifths verdicts and the two impossibility targets | worst relative residual 0.0e+00, tolerance 1e-9 |
-| C | `verify/kernel.c` | the integer confusion matrix behind every published rate, then every rate back out of the integers | worst residual 0.0e+00, tolerance 1e-12 |
-| Java | `verify/Impossibility.java` | Chouldechova's identity on all 23 published group rows, and the three policy spreads in `reports/impossibility.csv` | worst residual 2.4e-16 on the identity, spreads agree to 1e-9 |
-| Go | `verify/gocheck/` | the structure of all 8 results files, and the three impossibility fields no other check owns | 8 files well formed, fraud caught 3962 / 4136 / 3273, exact |
-| R | `verify/inference.R` | exact Clopper-Pearson intervals on the four-fifths verdict, and whether the extreme FPR pairs separate | best case for the model 0.3696, still under 0.8; largest p 3.2e-17 |
-| Rust | `verify/resample/` | 200,000 binomial replicates of the whole audit per segment, 9,200,000 draws, no crates | product code 0.0012 sits in [0.0005, 0.0020] at 99.9%; 0 of 200,000 replicates in any segment pass four-fifths |
-| JavaScript | `verify/readme.js` | the 25 numeric claims in this README, rebuilt from `reports/` and required to appear word for word | all 25 match |
-
-The C kernel also does something the Python never did. The seven segment tables
-are seven different partitions of the same transactions, so once the counts are
-recovered they have to agree on the totals. They do: **442,905 rows, 16,775
-frauds, 4,430 flagged, 3,962 true positives and 468 false positives**, from all
-seven independently. A grouping bug in any one of them would show up here.
-
-Each check was then tested by corrupting the file it reads and confirming it
-fails. That is what caught the one real error this found. An earlier draft of
-section 3 called the identity-absent group the lowest false-positive rate of any
-segment; product code W is lower, so the JavaScript check would not match, and
-the sentence is now the 90x comparison the data actually supports. SQL and Rust
-both tie `audit.json` to the segment tables. SQL does it exactly, Rust adds the
-sampling interval the Python never computed.
-
-## 7. Limitations
+## 6. Limitations
 
 - **No claim about protected attributes.** See above; the data has none.
 - **No mitigation shipped as a recommendation.** The impossibility table shows
@@ -221,7 +178,7 @@ sampling interval the Python never computed.
   error rates. Whether the model *causes* the disparity, or inherits it from how
   the data was collected, is not answerable from this dataset.
 
-## 8. Licence
+## 7. Licence
 
 MIT, see [LICENSE](LICENSE). Quoted provisions of Regulation (EU) 2024/1689 are
 official EU legal texts.
