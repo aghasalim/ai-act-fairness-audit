@@ -11,6 +11,9 @@ Regulation (EU) 2024/1689 from
 model, using my own corpus of the law, so nobody grades the homework but the
 primary source.
 
+> **Scope**  442,905 scored transactions · 1% alert budget · 7 proxy segments ·
+> no protected attribute present in the data · model **not** legally high-risk
+
 Predictions are the honest ones, chronological folds, 30-day embargo,
 fold-local encodings. Auditing a leaky split would measure the leak. Every number
 published here is recomputed from the committed segment tables by independent
@@ -18,41 +21,7 @@ programs in `verify/`, and CI fails the build if any of them disagrees.
 
 ---
 
-
----
-
-## Abstract
-
-The EU AI Act obliges providers of high-risk systems to assess discriminatory
-impact. This work audits a fraud-detection model I built myself, on 442,905
-transactions, under a fixed 1% review budget, so the threshold is
-the operational one rather than one chosen to make the audit look good.
-
-7 of the 7 available segments fall below the four-fifths disparate-impact
-threshold. The worst is product code at 0.0012, which is 661 times below the
-0.8 line. More usefully, selection-rate parity turns out to be the wrong thing
-to look at: false-negative gaps are an order of magnitude larger than
-false-positive gaps in every segment, and it is the false negative a customer
-experiences.
-
-The impossibility result is measured on this model rather than cited. Equalising
-selection rate, equalising false-positive rate and holding a single global
-threshold are three policies; each satisfies its own criterion and breaks the
-other two, because the groups have different base rates. Choosing between them is
-a decision about who bears which error, and no amount of tuning removes it.
-
-The audit's own limitation is stated up front: none of the available segments is a
-protected characteristic under the Act. Card type and device type are proxies at
-best, so this demonstrates the machinery rather than discharging the obligation.
-
-**Contributions.** (i) An audit at the operational review budget. (ii) Error-rate
-gaps reported alongside selection-rate parity. (iii) The impossibility theorem
-instantiated on a real model. (iv) A stated scope limit about what the available
-segments can and cannot support.
-
----
-
-## 1. I started from a premise that turned out to be false
+## The premise I opened with was wrong
 
 I began this convinced that fraud scoring is a textbook Annex III high-risk
 system. It is not. **Annex III, point 5(b)** covers creditworthiness scoring
@@ -74,9 +43,7 @@ The narrower point is that **"not high-risk" describes a regulatory category,
 not whether anyone is harmed.** A false positive is a declined card for a real
 person regardless of which annex applies.
 
----
-
-## 2. The limitation that decides what this audit can conclude
+## What the segments can and cannot support
 
 **IEEE-CIS contains no protected attributes.** No race, sex, age or nationality.
 So every segment below is a *proxy*, debit vs credit, free webmail vs
@@ -84,7 +51,9 @@ corporate, mobile vs desktop, transaction size.
 
 Proxies can prove error is distributed unevenly. They **cannot** tell you whether
 that unevenness tracks a protected characteristic. You cannot audit an attribute
-you never collected, and no method repairs that.
+you never collected, and no method repairs that. Which makes this a demonstration
+of the machinery rather than a discharge of anyone's obligation, and it is worth
+saying that before the numbers rather than after them.
 
 The Act anticipates exactly this. **Article 10(5)** lets providers process
 special-category data *specifically for bias detection*, gated on the test that
@@ -95,24 +64,35 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 
 ---
 
-## 3. What the audit found
+## Finding 1 — everything fails four-fifths, and it barely matters
 
-At the 1% alert budget all seven segments fail the four-fifths rule, and the
-worst is product code, where the false-positive rate runs 793 times higher for
-product C than for product W. Most of that is arithmetic rather than
-discrimination: one global threshold flags more of the groups that offend more,
-and base rates across product codes run from 2.1% to 12.8%. The second figure
-is the one that changed how I read the first. False-negative gaps are an order
-of magnitude larger than false-positive gaps in every segment, 46.2 points
-against 0.9 points for product code.
+The audit runs on 442,905 transactions under a fixed 1% review budget, which is
+the threshold the model actually operates at rather than one picked to flatter
+the result. At that budget, 7 of the 7 available segments fall below the
+four-fifths disparate-impact threshold. The worst is product code at 0.0012,
+which is 661 times below the 0.8 line: the false-positive rate runs 793 times
+higher for product C than for product W.
+
+Most of that is arithmetic rather than discrimination. One global threshold flags
+more of the groups that offend more, and base rates across product codes run from
+2.1% to 12.8%.
+
+## Finding 2 — the gap worth reading is the one nobody reports
+
+False-negative gaps are an order of magnitude larger than false-positive gaps in
+every segment: 46.2 points against 0.9 points for product code. Selection-rate
+parity is the wrong instrument here. It is the false negative a customer
+experiences, as a fraud that went through on their card.
 
 ![every segment against the four-fifths rule](reports/figures/four-fifths.png)
 ![false-positive and false-negative gaps](reports/figures/error-gaps.png)
 ![the worst segment, group by group](reports/figures/worst-segment.png)
 ![calibration by group across every segment](reports/figures/calibration.png)
 
-Full detail in [notes/METHODS.md](notes/METHODS.md#3-what-the-audit-found).
-### The group treated "best" is the one the model fails
+Method and per-group tables: [notes/METHODS.md](notes/METHODS.md#3-what-the-audit-found).
+
+## Finding 3 — the best-treated group is the one the model abandons
+
 Transactions with no identity record, **361,483 rows, 82% of volume**: have a
 false-positive rate of 0.0001, 90 times lower than where identity is present.
 That looks like the best-served group in the data and it is not. The model
@@ -121,8 +101,9 @@ catches **1.4%** of the fraud there against 42.6% where identity is present, so
 segment the model actually works on. The low false-positive rate is a model with nothing to say
 about 82% of its traffic.
 
-Full detail in [notes/METHODS.md](notes/METHODS.md#the-group-treated-best-is-the-one-the-model-fails).
-### At matched base rates, high-value fraud is missed twice as often
+Method and per-group tables: [notes/METHODS.md](notes/METHODS.md#the-group-treated-best-is-the-one-the-model-fails).
+
+## Finding 4 — at matched base rates, expensive fraud is missed twice as often
 
 Amount quartiles Q1 and Q4 have near-identical fraud rates, so base-rate
 arithmetic cannot explain a gap between them:
@@ -136,9 +117,7 @@ arithmetic cannot explain a gap between them:
 Same prevalence, half the detection. The model is markedly worse at the
 transactions that cost the most when missed.
 
----
-
-## 4. The impossibility, measured rather than cited
+## Finding 5 — the impossibility, on this model rather than in a citation
 
 Equal selection rates, equal false-positive rates, and a calibrated score cannot
 hold together when base rates differ. I built all three policies on product code
@@ -149,10 +128,16 @@ false-positive rate closes that gap to 0.01pp and opens a 3.26pp selection
 spread instead. Both equalising policies need a different threshold per group,
 so the same score gets a different decision depending on which group you are in.
 
+Choosing between them is a decision about who bears which error, and no amount of
+tuning removes it.
+
 ![three fairness policies, each breaking the other two](reports/figures/impossibility.png)
 
-Full detail in [notes/METHODS.md](notes/METHODS.md#4-the-impossibility-measured-rather-than-cited).
-## 5. Running it
+Method and per-group tables: [notes/METHODS.md](notes/METHODS.md#4-the-impossibility-measured-rather-than-cited).
+
+---
+
+## Rebuilding the audit
 
 ```bash
 make setup && make audit
@@ -168,25 +153,21 @@ FRAUD_REPO=~/ieee-fraud-ml make export
 Row-level predictions are gitignored, IEEE-CIS is not redistributable, so this
 repo commits aggregate results only. `make test` runs without any of it.
 
-## 6. Limitations
+## Three things this audit does not establish
 
-- **No claim about protected attributes.** See above; the data has none.
-- **No mitigation shipped as a recommendation.** The impossibility table shows
-  the options and their costs; picking one is a business decision I am not in a
-  position to make on someone's behalf.
+- **Nothing about protected attributes.** The data has none, and proxies do not
+  become one by being measured carefully.
+- **No recommended mitigation.** The impossibility table shows the options and
+  their costs; picking one is a business decision I am not in a position to make
+  on someone's behalf.
 - **No causal claim.** These are associations between segment membership and
   error rates. Whether the model *causes* the disparity, or inherits it from how
   the data was collected, is not answerable from this dataset.
 
-## 7. Licence
+MIT licensed, terms in [LICENSE](LICENSE). Quoted provisions of Regulation (EU)
+2024/1689 are official EU legal texts.
 
-MIT, see [LICENSE](LICENSE). Quoted provisions of Regulation (EU) 2024/1689 are
-official EU legal texts.
-
-## References
-
-The papers and sources this implementation follows. Each one is here because
-the code uses the method, the dataset or the metric it describes.
+## Sources
 
 - **Hardt, Price, Srebro. Equality of Opportunity in Supervised Learning. NeurIPS 2016.** [arXiv:1610.02413](https://arxiv.org/abs/1610.02413) equalised odds and equal opportunity.
 - **Feldman, Friedler, Moeller, Scheidegger, Venkatasubramanian. Certifying and removing disparate impact. KDD 2015.** [arXiv:1412.3756](https://arxiv.org/abs/1412.3756) the disparate impact ratio.
