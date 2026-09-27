@@ -3,6 +3,7 @@
 [![ci](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23003608.svg)](https://doi.org/10.5281/zenodo.23003608)
 
 A fairness audit of the LightGBM fraud model from
 [ieee-fraud-ml](https://github.com/aghasalim/ieee-fraud-ml), against the text of
