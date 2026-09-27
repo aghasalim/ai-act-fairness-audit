@@ -64,7 +64,7 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 
 ---
 
-## Finding 1 — everything fails four-fifths, and it barely matters
+## Finding 1: everything fails four-fifths, and it barely matters
 
 The audit runs on 442,905 transactions under a fixed 1% review budget, which is
 the threshold the model actually operates at rather than one picked to flatter
@@ -77,7 +77,7 @@ Most of that is arithmetic rather than discrimination. One global threshold flag
 more of the groups that offend more, and base rates across product codes run from
 2.1% to 12.8%.
 
-## Finding 2 — the gap worth reading is the one nobody reports
+## Finding 2: the gap worth reading is the one nobody reports
 
 False-negative gaps are an order of magnitude larger than false-positive gaps in
 every segment: 46.2 points against 0.9 points for product code. Selection-rate
@@ -91,7 +91,7 @@ experiences, as a fraud that went through on their card.
 
 Method and per-group tables: [notes/METHODS.md](notes/METHODS.md#3-what-the-audit-found).
 
-## Finding 3 — the best-treated group is the one the model abandons
+## Finding 3: the best-treated group is the one the model abandons
 
 Transactions with no identity record, **361,483 rows, 82% of volume**: have a
 false-positive rate of 0.0001, 90 times lower than where identity is present.
@@ -103,7 +103,7 @@ about 82% of its traffic.
 
 Method and per-group tables: [notes/METHODS.md](notes/METHODS.md#the-group-treated-best-is-the-one-the-model-fails).
 
-## Finding 4 — at matched base rates, expensive fraud is missed twice as often
+## Finding 4: at matched base rates, expensive fraud is missed twice as often
 
 Amount quartiles Q1 and Q4 have near-identical fraud rates, so base-rate
 arithmetic cannot explain a gap between them:
@@ -117,7 +117,7 @@ arithmetic cannot explain a gap between them:
 Same prevalence, half the detection. The model is markedly worse at the
 transactions that cost the most when missed.
 
-## Finding 5 — the impossibility, on this model rather than in a citation
+## Finding 5: the impossibility, on this model rather than in a citation
 
 Equal selection rates, equal false-positive rates, and a calibrated score cannot
 hold together when base rates differ. I built all three policies on product code
@@ -155,14 +155,16 @@ repo commits aggregate results only. `make test` runs without any of it.
 
 ## Three things this audit does not establish
 
-- **Nothing about protected attributes.** The data has none, and proxies do not
-  become one by being measured carefully.
-- **No recommended mitigation.** The impossibility table shows the options and
-  their costs; picking one is a business decision I am not in a position to make
-  on someone's behalf.
-- **No causal claim.** These are associations between segment membership and
-  error rates. Whether the model *causes* the disparity, or inherits it from how
-  the data was collected, is not answerable from this dataset.
+**Nothing about protected attributes.** The data has none, and proxies do not
+become one by being measured carefully.
+
+**No recommended mitigation.** The impossibility table shows the options and
+their costs; picking one is a business decision I am not in a position to make
+on someone's behalf.
+
+**No causal claim.** These are associations between segment membership and
+error rates. Whether the model *causes* the disparity, or inherits it from how
+the data was collected, is not answerable from this dataset.
 
 MIT licensed, terms in [LICENSE](LICENSE). Quoted provisions of Regulation (EU)
 2024/1689 are official EU legal texts.
