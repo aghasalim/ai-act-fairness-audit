@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: If you use this work, please cite it as below.
+title: "Auditing my own fraud model against the EU AI Act"
+abstract: "Fairness audit of my own fraud model against the EU AI Act, which turns out to exempt fraud detection from high-risk classification."
+type: software
+authors:
+  - family-names: Mustafazada
+    given-names: Aghasalim
+    orcid: "https://orcid.org/0009-0001-8746-4582"
+    affiliation: "Howest University of Applied Sciences"
+repository-code: "https://github.com/aghasalim/ai-act-fairness-audit"
+url: "https://aghasalim.github.io/"
+license: MIT
+keywords:
+  - eu ai act
+  - fairness
+  - fraud detection
+  - machine learning
+  - model evaluation
+  - responsible ai
