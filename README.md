@@ -45,20 +45,20 @@ person regardless of which annex applies.
 
 ## What the segments can and cannot support
 
-**IEEE-CIS contains no protected attributes.** No race, sex, age or nationality.
+IEEE-CIS contains no protected attributes. No race, sex, age or nationality.
 So every segment below is a *proxy*, debit vs credit, free webmail vs
 corporate, mobile vs desktop, transaction size.
 
 Proxies can prove error is distributed unevenly. They **cannot** tell you whether
 that unevenness tracks a protected characteristic. You cannot audit an attribute
 you never collected, and no method repairs that. Which makes this a demonstration
-of the machinery rather than a discharge of anyone's obligation, and it is worth
-saying that before the numbers rather than after them.
+of the machinery instead of a discharge of anyone's obligation, and it is worth
+saying that before the numbers instead of after them.
 
 The Act anticipates exactly this. **Article 10(5)** lets providers process
 special-category data *specifically for bias detection*, gated on the test that
 "bias detection and correction cannot be effectively fulfilled by processing
-other data". It treats not-knowing as a problem to solve rather than a defence
+other data". It treats not-knowing as a problem to solve instead of a defence
 which is the opposite of how "we don't collect race" is usually deployed in an
 argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 
@@ -67,13 +67,13 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 ## Finding 1: everything fails four-fifths, and it barely matters
 
 The audit runs on 442,905 transactions under a fixed 1% review budget, which is
-the threshold the model actually operates at rather than one picked to flatter
+the threshold the model actually operates at instead of one picked to flatter
 the result. At that budget, 7 of the 7 available segments fall below the
 four-fifths disparate-impact threshold. The worst is product code at 0.0012,
 which is 661 times below the 0.8 line: the false-positive rate runs 793 times
 higher for product C than for product W.
 
-Most of that is arithmetic rather than discrimination. One global threshold flags
+Most of that is arithmetic instead of discrimination. One global threshold flags
 more of the groups that offend more, and base rates across product codes run from
 2.1% to 12.8%.
 
@@ -155,14 +155,14 @@ repo commits aggregate results only. `make test` runs without any of it.
 
 ## Three things this audit does not establish
 
-**Nothing about protected attributes.** The data has none, and proxies do not
+Nothing about protected attributes. The data has none, and proxies do not
 become one by being measured carefully.
 
-**No recommended mitigation.** The impossibility table shows the options and
+No recommended mitigation. The impossibility table shows the options and
 their costs; picking one is a business decision I am not in a position to make
 on someone's behalf.
 
-**No causal claim.** These are associations between segment membership and
+No causal claim. These are associations between segment membership and
 error rates. Whether the model *causes* the disparity, or inherits it from how
 the data was collected, is not answerable from this dataset.
 
