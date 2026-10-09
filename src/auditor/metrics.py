@@ -9,8 +9,9 @@ Which metric matters depends on who is harmed:
 
 - **False positive rate**, a legitimate customer is blocked. In fraud this is
   the harm that lands on the innocent, so FPR parity is the headline.
-- **False negative rate**, fraud gets through. The cost falls on the merchant
-  or the bank, not the customer whose group it is.
+- **False negative rate**, fraud gets through. The cardholder has to spot the
+  charge and dispute it, but the money usually comes back through a
+  chargeback, so the financial loss falls on the merchant or the issuer.
 - **Selection rate**, the share of a group flagged at all, regardless of
   correctness. Being flagged is the adverse outcome, so the disparate-impact
   ratio is built on its complement, the share of a group let through.

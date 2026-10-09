@@ -87,8 +87,10 @@ run from 2.1% to 12.8%.
 
 False-negative gaps are an order of magnitude larger than false-positive gaps in
 every segment: 46.2 points against 0.9 points for product code. Selection-rate
-parity is the wrong instrument here. It is the false negative a customer
-experiences, as a fraud that went through on their card.
+parity is the wrong instrument here. A false negative is a fraud that went
+through on a customer's card. The customer is the one who has to spot it and
+dispute it; the money itself usually comes back to them through a chargeback, so
+the financial loss lands on the merchant or the card issuer.
 
 ![every segment against the four-fifths rule](reports/figures/four-fifths.png)
 ![false-positive and false-negative gaps](reports/figures/error-gaps.png)
