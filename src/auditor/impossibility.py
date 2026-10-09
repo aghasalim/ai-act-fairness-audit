@@ -57,7 +57,7 @@ def run(df: pd.DataFrame, segment: str = "product_code",
     global_thr = metrics.threshold_at_budget(df["pred"].to_numpy(), budget)
 
     groups = [(g, s) for g, s in df.groupby(segment, observed=True)
-              if len(s) >= 500 and s["isFraud"].nunique() > 1]
+              if len(s) >= 500 and not s["isFraud"].all()]
     if len(groups) < 2:
         raise ValueError(f"not enough usable groups in {segment}")
 

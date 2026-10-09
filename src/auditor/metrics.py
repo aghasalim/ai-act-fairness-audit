@@ -40,10 +40,14 @@ def group_metrics(df: pd.DataFrame, segment: str, threshold: float,
     Groups below `min_n` are dropped rather than reported: a false-positive rate
     over 200 rows swings wildly, and publishing it as a disparity would be
     manufacturing a finding out of sampling noise.
+
+    A group with no fraud is kept. Its FPR is well defined, and it is exactly
+    the group where every flag is a false positive; only TPR, FNR and AUC are
+    undefined there, and they come out as NaN.
     """
     rows = []
     for g, sub in df.groupby(segment, observed=True):
-        if len(sub) < min_n or sub["isFraud"].nunique() < 2:
+        if len(sub) < min_n or sub["isFraud"].all():
             continue
         y = sub["isFraud"].to_numpy().astype(bool)
         flag = sub["pred"].to_numpy() >= threshold
