@@ -75,10 +75,10 @@ const names = Object.keys(S);
 claim("row count", `on ${thousands(audit.n)} transactions`);
 claim("review budget", `under a fixed ${audit.budget * 100}% review budget`);
 
-const failing = names.filter((k) => !S[k].passes_four_fifths).length;
+const passing = names.filter((k) => S[k].passes_four_fifths).length;
 claim(
-  "how many segments fail four-fifths",
-  `${failing} of the ${names.length} available segments fall below the four-fifths`
+  "how many segments pass four-fifths",
+  `${passing} of the ${names.length} available segments pass the four-fifths`
 );
 
 const worstSeg = names.reduce((a, b) =>
@@ -86,9 +86,22 @@ const worstSeg = names.reduce((a, b) =>
 );
 const di = S[worstSeg].disparate_impact_ratio;
 claim(
-  "the worst disparate impact ratio and which segment holds it",
-  `The worst is ${worstSeg.replace("_", " ")} at ${di.toFixed(4)}, which is ` +
-    `${Math.round(0.8 / di)} times below the 0.8 line`
+  "the lowest disparate impact ratio and which segment holds it",
+  `The lowest is ${worstSeg.replace("_", " ")} at ${di.toFixed(4)}`
+);
+// The ratio is on the favourable outcome, not being flagged: rebuild it from
+// the selection rates rather than trusting the JSON field.
+const favC = 1 - by(pc, "C").selection_rate;
+const favW = 1 - by(pc, "W").selection_rate;
+assert(
+  "the product-code ratio is favourable rate over favourable rate",
+  Math.abs(favC / favW - S.product_code.disparate_impact_ratio) < 1e-12,
+  `${favC / favW} against ${S.product_code.disparate_impact_ratio}`
+);
+claim(
+  "the favourable rates behind it",
+  `${(favC * 100).toFixed(1)}% of product C transactions go through unflagged, ` +
+    `against ${(favW * 100).toFixed(2)}% for product W`
 );
 
 const nIdent = by(ident, "no");

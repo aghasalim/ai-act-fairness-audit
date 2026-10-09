@@ -7,7 +7,7 @@
       "n_groups": 3,
       "selection_min": 0.005040832497580459,
       "selection_max": 0.027138886651091598,
-      "disparate_impact_ratio": 0.18574205207411126,
+      "disparate_impact_ratio": 0.9777899889007682,
       "FPR_min": 0.0005910059100591006,
       "FPR_max": 0.0029372116217134467,
       "FPR_ratio": 4.969851522161133,
@@ -17,13 +17,13 @@
       "AUC_max": 0.7992327587703311,
       "worst_FPR_group": "credit",
       "best_FPR_group": "debit",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "email_class": {
       "n_groups": 3,
       "selection_min": 0.0026461089696843423,
       "selection_max": 0.01272285125695079,
-      "disparate_impact_ratio": 0.20798081469660434,
+      "disparate_impact_ratio": 0.9898965228111191,
       "FPR_min": 0.00018615307510560608,
       "FPR_max": 0.0014117449425933464,
       "FPR_ratio": 7.5837852358466415,
@@ -33,13 +33,13 @@
       "AUC_max": 0.8071844546839355,
       "worst_FPR_group": "free webmail",
       "best_FPR_group": "missing",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "device_type": {
       "n_groups": 3,
       "selection_min": 0.0003734615459094895,
       "selection_max": 0.05960825524710278,
-      "disparate_impact_ratio": 0.006265265513330745,
+      "disparate_impact_ratio": 0.9407430761164074,
       "FPR_min": 6.78452901234219e-05,
       "FPR_max": 0.00626157212590473,
       "FPR_ratio": 92.2919205520956,
@@ -49,13 +49,13 @@
       "AUC_max": 0.8531553871811693,
       "worst_FPR_group": "mobile",
       "best_FPR_group": "unknown",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "product_code": {
       "n_groups": 5,
       "selection_min": 8.159498500340448e-05,
       "selection_max": 0.0674491454855466,
-      "disparate_impact_ratio": 0.0012097260004708158,
+      "disparate_impact_ratio": 0.9326269521966316,
       "FPR_min": 1.1493691400132752e-05,
       "FPR_max": 0.009117158902303163,
       "FPR_ratio": 793.2315724257099,
@@ -65,13 +65,13 @@
       "AUC_max": 0.8719856853361748,
       "worst_FPR_group": "C",
       "best_FPR_group": "W",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "identity_present": {
       "n_groups": 2,
       "selection_min": 0.0003734615459094895,
       "selection_max": 0.05274987104222446,
-      "disparate_impact_ratio": 0.007079857040987766,
+      "disparate_impact_ratio": 0.9476040226209737,
       "FPR_min": 6.78452901234219e-05,
       "FPR_max": 0.00613395225464191,
       "FPR_ratio": 90.41087809460653,
@@ -81,13 +81,13 @@
       "AUC_max": 0.8479745141424684,
       "worst_FPR_group": "yes",
       "best_FPR_group": "no",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "amount_band": {
       "n_groups": 4,
       "selection_min": 0.005934929011852089,
       "selection_max": 0.01809471691681095,
-      "disparate_impact_ratio": 0.3279923659009125,
+      "disparate_impact_ratio": 0.9877676137510079,
       "FPR_min": 0.0005292453691030203,
       "FPR_max": 0.002351458374483855,
       "FPR_ratio": 4.443040056201477,
@@ -97,13 +97,13 @@
       "AUC_max": 0.8464805872213749,
       "worst_FPR_group": "Q1 lowest",
       "best_FPR_group": "Q2",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     },
     "region": {
       "n_groups": 3,
       "selection_min": 0.002503486999749651,
       "selection_max": 0.06797559139358877,
-      "disparate_impact_ratio": 0.03682920513709236,
+      "disparate_impact_ratio": 0.9343635756711436,
       "FPR_min": 0.00017309659314432584,
       "FPR_max": 0.008996697414873021,
       "FPR_ratio": 51.975011474499006,
@@ -113,7 +113,7 @@
       "AUC_max": 0.8740002464183652,
       "worst_FPR_group": "-1",
       "best_FPR_group": "87",
-      "passes_four_fifths": false
+      "passes_four_fifths": true
     }
   },
   "impossibility": {

@@ -52,21 +52,25 @@ def test_tiny_groups_are_dropped_not_reported():
     assert "tiny" not in set(g["group"])
 
 
-def test_disparate_impact_ratio_is_min_over_max():
+def test_disparate_impact_ratio_is_on_the_favourable_outcome():
+    """Being flagged is the adverse outcome. Four-fifths compares the rate of
+    the favourable one, not being flagged: 0.90 / 0.95, not 0.05 / 0.10."""
     g = pd.DataFrame({
         "group": ["A", "B"], "selection_rate": [0.10, 0.05],
         "FPR": [0.02, 0.01], "FNR": [0.5, 0.6], "AUC": [0.8, 0.7]})
     d = metrics.disparity(g)
-    assert d["disparate_impact_ratio"] == pytest.approx(0.5)
-    assert not d["passes_four_fifths"]
+    assert d["disparate_impact_ratio"] == pytest.approx(0.90 / 0.95)
+    assert d["passes_four_fifths"]
     assert d["FPR_ratio"] == pytest.approx(2.0)
 
 
-def test_four_fifths_passes_when_rates_are_close():
+def test_four_fifths_fails_when_one_group_is_mostly_flagged():
     g = pd.DataFrame({
-        "group": ["A", "B"], "selection_rate": [0.10, 0.09],
+        "group": ["A", "B"], "selection_rate": [0.30, 0.05],
         "FPR": [0.02, 0.02], "FNR": [0.5, 0.5], "AUC": [0.8, 0.8]})
-    assert metrics.disparity(g)["passes_four_fifths"]
+    d = metrics.disparity(g)
+    assert d["disparate_impact_ratio"] == pytest.approx(0.70 / 0.95)
+    assert not d["passes_four_fifths"]
 
 
 def test_equalising_selection_rate_actually_equalises_it():

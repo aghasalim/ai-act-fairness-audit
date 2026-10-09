@@ -60,10 +60,10 @@ def _rows(ax, positions) -> None:
 def four_fifths(out: Path) -> Path:
     """Every segment against the four-fifths rule.
 
-    The disparate-impact ratio is the smallest group selection rate over the
-    largest. Below 0.8 is the conventional trigger for further scrutiny. The
-    ratios run over three decades, so they sit on a log axis as dots rather than
-    as bars whose length would be meaningless.
+    The disparate-impact ratio is the smallest group rate of the favourable
+    outcome, not being flagged, over the largest. Below 0.8 is the conventional
+    trigger for further scrutiny. At a 1% alert budget every group is let
+    through more than 90% of the time, so the ratios bunch just under 1.
     """
     segments = audit()["segments"]
     names = sorted(segments, key=lambda k: segments[k]["disparate_impact_ratio"])
@@ -71,28 +71,27 @@ def four_fifths(out: Path) -> Path:
     positions = np.arange(len(names))
 
     figure, ax = plt.subplots(figsize=(9.5, 4.6))
-    ax.set_xscale("log")
-    ax.set_xlim(6e-4, 1.7)
+    ax.set_xlim(0.7, 1.03)
     _rows(ax, positions)
 
     for index, ratio in enumerate(ratios):
         colour = PASSES if ratio >= FOUR_FIFTHS else FAIL
         ax.plot([ratio], [index], "o", markersize=9, color=colour, zorder=3)
-        ax.annotate(f"{ratio:.3g}", (ratio, index), xytext=(10, 0),
+        ax.annotate(f"{ratio:.3f}", (ratio, index), xytext=(10, 0),
                     textcoords="offset points", fontsize=9, color="#5a5a5a",
                     va="center")
 
     ax.axvline(FOUR_FIFTHS, color="#333333", linestyle="--", linewidth=1.4, zorder=2)
-    ax.text(FOUR_FIFTHS * 1.12, (len(names) - 1) / 2, "four-fifths rule", fontsize=9,
+    ax.text(FOUR_FIFTHS + 0.004, (len(names) - 1) / 2, "four-fifths rule", fontsize=9,
             color="#333333", va="center", rotation=90, ha="left")
 
     ax.set_yticklabels([f"{n.replace('_', ' ')}\n{segments[n]['n_groups']} groups"
                         for n in names])
-    _plain_log(ax.xaxis)
-    ax.set_xlabel("disparate impact ratio, min / max group selection rate "
-                  "(unitless, log scale)")
-    titled(ax, f"Every segment falls below four-fifths, "
-               f"{names[0].replace('_', ' ')} by {FOUR_FIFTHS / ratios[0]:.0f}x",
+    ax.set_xlabel("disparate impact ratio, min / max group rate of not being flagged "
+                  "(unitless)")
+    passing = sum(r >= FOUR_FIFTHS for r in ratios)
+    titled(ax, f"{passing} of {len(names)} segments pass four-fifths, the lowest at "
+               f"{ratios[0]:.3f}",
            f"{len(names)} proxy segments of {audit()['n']:,} transactions, {BUDGET}")
     figure.tight_layout()
     figure.savefig(out)
