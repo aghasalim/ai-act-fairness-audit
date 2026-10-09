@@ -97,3 +97,20 @@ def test_no_policy_equalises_both_at_once():
     _, s = impossibility.run(d, "product_code", budget=0.05)
     assert not any(p["selection_spread_pp"] < 1.0 and p["FPR_spread_pp"] < 1.0
                    for p in s["policies"].values())
+
+
+def test_group_with_no_fraud_is_kept_because_its_fpr_is_defined():
+    """Every flag in a fraud-free group is a false positive. Dropping the group
+    for having no positives hides exactly the people the FPR is meant for."""
+    d = frame()
+    clean = d.index[:600]
+    d.loc[clean, "product_code"] = "clean"
+    d.loc[clean, "isFraud"] = 0
+    d.loc[clean, "pred"] = np.linspace(0.01, 0.5, 600)
+    d.loc[clean[:30], "pred"] = 0.999
+    g = metrics.group_metrics(d, "product_code", 0.99).set_index("group")
+    assert "clean" in g.index
+    assert g.loc["clean", "FPR"] == pytest.approx(30 / 600)
+    assert np.isnan(g.loc["clean", "TPR"]) and np.isnan(g.loc["clean", "AUC"])
+    out, _ = impossibility.run(d, "product_code", budget=0.05)
+    assert "clean" in set(out["group"])
