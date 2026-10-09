@@ -12,7 +12,8 @@ Which metric matters depends on who is harmed:
 - **False negative rate**, fraud gets through. The cost falls on the merchant
   or the bank, not the customer whose group it is.
 - **Selection rate**, the share of a group flagged at all, regardless of
-  correctness. This is what a disparate-impact claim is usually built on.
+  correctness. Being flagged is the adverse outcome, so the disparate-impact
+  ratio is built on its complement, the share of a group let through.
 - **Calibration**, whether a score of 0.3 means the same thing in every group.
 
 These cannot all be equalised at once when base rates differ. That is a theorem,
@@ -79,7 +80,10 @@ def disparity(g: pd.DataFrame) -> dict:
     out = {
         "n_groups": len(g),
         "selection_min": sel.min(), "selection_max": sel.max(),
-        "disparate_impact_ratio": sel.min() / sel.max() if sel.max() else np.nan,
+        # The four-fifths rule compares rates of the favourable outcome. Here
+        # that is not being flagged, so the ratio is on 1 - selection rate. On
+        # the flag rate itself it would measure the adverse outcome instead.
+        "disparate_impact_ratio": (1 - sel).min() / (1 - sel).max() if (1 - sel).max() else np.nan,
         "FPR_min": fpr.min(), "FPR_max": fpr.max(),
         "FPR_ratio": fpr.max() / fpr.min() if fpr.min() else np.inf,
         "FPR_gap_pp": (fpr.max() - fpr.min()) * 100,

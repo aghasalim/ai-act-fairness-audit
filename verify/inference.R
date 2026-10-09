@@ -2,9 +2,8 @@
 #
 # Every rate in reports/ is a point estimate from a finite number of rows, and
 # the Python never put an interval on any of them. The four-fifths verdict in
-# particular is a comparison of two ratios of counts, and product W contributes
-# 29 flagged rows out of 355,414. A finding that rests on 29 rows deserves an
-# interval before it is written down as a fact.
+# particular is a comparison of two ratios of counts, and a verdict read off
+# point estimates deserves an interval before it is written down as a fact.
 #
 # This rebuilds the integer confusion matrix behind each published row, then
 # uses exact binomial intervals rather than the normal approximation, because
@@ -13,8 +12,9 @@
 # It reports, per segment:
 #   - a 95% Clopper-Pearson interval on the selection rate of the most and
 #     least flagged group,
-#   - the most favourable disparate-impact ratio consistent with those
-#     intervals, which is the strongest case that can be made for the model,
+#   - the least favourable disparate-impact ratio consistent with those
+#     intervals, on the favourable outcome (not being flagged), which is the
+#     strongest case that can be made against the model,
 #   - whether the false-positive rate difference between the extreme groups is
 #     distinguishable from zero,
 #   - the ratio of the false-negative gap to the false-positive gap, which the
@@ -45,7 +45,7 @@ counts <- function(r) {
 
 ci <- function(x, n) binom.test(x, n)$conf.int  # Clopper-Pearson, exact
 
-worst_ratio <- 0
+worst_ratio <- Inf
 min_gap_ratio <- Inf
 
 for (seg in segments) {
@@ -58,14 +58,15 @@ for (seg in segments) {
   ci_hi <- ci(cnt[[hi]]$flagged, cnt[[hi]]$n)
   ci_lo <- ci(cnt[[lo]]$flagged, cnt[[lo]]$n)
 
-  # The kindest reading of the data: the least flagged group as high as its
-  # interval allows, the most flagged as low as its interval allows.
-  best_case <- ci_lo[2] / ci_hi[1]
-  point <- d$selection_rate[lo] / d$selection_rate[hi]
-  if (best_case >= 0.8)
-    fail(seg, ": the four-fifths failure is inside sampling error, best case ",
-         signif(best_case, 4))
-  worst_ratio <- max(worst_ratio, best_case)
+  # The harshest reading of the data on the favourable outcome: the most
+  # flagged group let through as rarely as its interval allows, the least
+  # flagged let through as often as its interval allows.
+  worst_case <- (1 - ci_hi[2]) / (1 - ci_lo[1])
+  point <- (1 - d$selection_rate[hi]) / (1 - d$selection_rate[lo])
+  if (worst_case < 0.8)
+    fail(seg, ": the four-fifths pass is inside sampling error, worst case ",
+         signif(worst_case, 4))
+  worst_ratio <- min(worst_ratio, worst_case)
 
   # Is the false-positive difference between the extreme FPR groups real?
   ph <- which.max(d$FPR); pl <- which.min(d$FPR)
@@ -81,8 +82,8 @@ for (seg in segments) {
   fpr_gap <- (max(d$FPR) - min(d$FPR)) * 100
   min_gap_ratio <- min(min_gap_ratio, fnr_gap / fpr_gap)
 
-  cat(sprintf("  %-17s DI %.5f  95%% best case %.5f   FPR %s vs %s p=%.3g   FNR gap %.1fx FPR gap\n",
-              seg, point, best_case, d$group[ph], d$group[pl], p, fnr_gap / fpr_gap))
+  cat(sprintf("  %-17s DI %.5f  95%% worst case %.5f   FPR %s vs %s p=%.3g   FNR gap %.1fx FPR gap\n",
+              seg, point, worst_case, d$group[ph], d$group[pl], p, fnr_gap / fpr_gap))
 }
 
 if (min_gap_ratio < 10)
@@ -106,8 +107,8 @@ if (failures > 0) {
   cat("R: ", failures, " failure(s)\n", sep = "")
   quit(status = 1)
 }
-cat(sprintf(paste0("R: all 7 segments fail four-fifths on the most favourable reading",
-                   " of their exact intervals (worst case %.4f, still under 0.8),\n",
+cat(sprintf(paste0("R: all 7 segments pass four-fifths on the least favourable reading",
+                   " of their exact intervals (worst case %.4f, still over 0.8),\n",
                    "   every extreme FPR pair separates, smallest false-negative to",
                    " false-positive gap ratio %.0fx\n"),
             worst_ratio, min_gap_ratio))

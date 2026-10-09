@@ -25,17 +25,24 @@ model nobody uses that way.
 
 | segment | FPR ratio | worst | best | four-fifths |
 |---|---|---|---|---|
-| product code | **793×** | C | W | fails |
-| device type | 92× | mobile | unknown | fails |
-| identity present | 90× | yes | no | fails |
-| region | 52× | other | 87 | fails |
-| email class | 7.6× | free webmail | missing | fails |
-| card type | 5.0× | credit | debit | fails |
-| amount band | 4.4× | Q1 lowest | Q2 | fails |
+| product code | **793×** | C | W | passes |
+| device type | 92× | mobile | unknown | passes |
+| identity present | 90× | yes | no | passes |
+| region | 52× | other | 87 | passes |
+| email class | 7.6× | free webmail | missing | passes |
+| card type | 5.0× | credit | debit | passes |
+| amount band | 4.4× | Q1 lowest | Q2 | passes |
 
-Every segment fails the four-fifths rule. **I do not think that means what it
-looks like**, and saying so is the difference between an audit and an
-accusation: selection rates track base rates, which genuinely differ 5.7× across
+Every segment passes the four-fifths rule, applied as the rule intends to the
+favourable outcome, which here is not being flagged. The lowest ratio is product
+code at 0.9326. **I do not think that pass means much either**: at a 1% alert
+budget every group is let through more than 90% of the time, so the ratio is
+pinned near 1 whatever the model does, while the FPR ratio in the same table
+runs to 793×. My first version applied the rule to the flag rate, the adverse
+outcome, got 0.0012 and called every segment a failure. That was the rule turned
+upside down.
+
+The FPR gaps themselves track base rates, which genuinely differ 5.7× across
 these groups. A single-threshold ranker mechanically flags more of the groups
 that offend more. Most of this table is arithmetic, not discrimination.
 

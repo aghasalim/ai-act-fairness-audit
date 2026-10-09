@@ -1,8 +1,9 @@
 //! How much of the audit is sampling noise?
 //!
-//! The disparate impact ratio for product code is 0.0012, and the README calls
-//! that 661 times below the four-fifths line. It rests on 29 flagged rows out
-//! of 355,414 for product W. A point estimate built on 29 events can move a
+//! The disparate impact ratio for product code is 0.9326, on the favourable
+//! outcome (not being flagged), and the README says every segment passes the
+//! four-fifths line. The false-positive ratio behind it rests on 29 flagged rows
+//! out of 355,414 for product W. A point estimate built on 29 events can move a
 //! long way, and the Python never resampled anything: it reported the ratio it
 //! computed once and stopped.
 //!
@@ -13,7 +14,7 @@
 //! interval over replicates says how firm the published numbers are.
 //!
 //! Two things are then required to hold:
-//!   1. no replicate, in any segment, passes the four-fifths rule,
+//!   1. every replicate, in every segment, passes the four-fifths rule,
 //!   2. the ratio audit.json publishes falls inside the resampled interval,
 //!      which ties the JSON to the tables through the sampling distribution
 //!      rather than through a single division.
@@ -229,7 +230,8 @@ fn main() {
                 fpr_lo = fpr_lo.min(fp);
                 fpr_hi = fpr_hi.max(fp);
             }
-            let r = if sel_hi > 0.0 { sel_lo / sel_hi } else { 1.0 };
+            // Favourable outcome: the least let-through group over the most.
+            let r = (1.0 - sel_hi) / (1.0 - sel_lo);
             if r >= 0.8 {
                 passes += 1;
             }
@@ -249,8 +251,8 @@ fn main() {
         let (flo, fhi) = (percentile(&fpr_ratio, 0.025), percentile(&fpr_ratio, 0.975));
         let published_fpr = published_ratio(&doc, seg, "FPR_ratio");
 
-        if passes > 0 {
-            println!("  FAIL {seg}: {passes} of {REPLICATES} replicates pass four-fifths");
+        if passes < REPLICATES {
+            println!("  FAIL {seg}: only {passes} of {REPLICATES} replicates pass four-fifths");
             failures += 1;
         }
         if published < lo || published > hi {
@@ -289,7 +291,7 @@ fn main() {
     }
     println!(
         "Rust: {} binomial draws over {} replicates per segment, seed {:#x}; \
-         no replicate in any segment reaches four-fifths",
+         every replicate in every segment passes four-fifths",
         draws, REPLICATES, SEED
     );
 }

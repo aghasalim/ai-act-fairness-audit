@@ -62,17 +62,26 @@ argument. Full mapping in **[docs/ai_act_mapping.md](docs/ai_act_mapping.md)**.
 
 ---
 
-## Finding 1: everything fails four-fifths, and it barely matters
+## Finding 1: everything passes four-fifths, and that says little
 
 The audit runs on 442,905 transactions under a fixed 1% review budget, which is
-the threshold the model actually operates at. At that budget, 7 of the 7 available segments fall below the
-four-fifths disparate-impact threshold. The worst is product code at 0.0012,
-which is 661 times below the 0.8 line: the false-positive rate runs 793 times
-higher for product C than for product W.
+the threshold the model actually operates at. The four-fifths rule compares
+rates of the favourable outcome, and here that is not being flagged. At that
+budget, 7 of the 7 available segments pass the four-fifths disparate-impact
+threshold. The lowest is product code at 0.9326: 93.3% of product C transactions
+go through unflagged, against 99.99% for product W.
 
-Most of that is arithmetic, not discrimination. One global threshold flags
-more of the groups that offend more, and base rates across product codes run from
-2.1% to 12.8%.
+That pass is close to automatic. With 1% of all traffic flagged, every group's
+favourable rate stays above 90%, so the ratio cannot fall far below 1 whatever
+the model does to a group. Meanwhile the false-positive rate runs 793 times
+higher for product C than for product W, and the rule cannot see it. My first
+version of this audit applied the rule to the flag rate itself, the adverse
+outcome, and reported a ratio of 0.0012 and seven failures. That was the rule
+pointed the wrong way round.
+
+Most of the FPR gap is arithmetic, not discrimination. One global threshold
+flags more of the groups that offend more, and base rates across product codes
+run from 2.1% to 12.8%.
 
 ## Finding 2: the gap worth reading is the one nobody reports
 

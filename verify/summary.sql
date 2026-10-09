@@ -41,7 +41,8 @@ SELECT segment,
        COUNT(*)                                   AS n_groups,
        MIN(CAST(selection_rate AS REAL))          AS selection_min,
        MAX(CAST(selection_rate AS REAL))          AS selection_max,
-       MIN(CAST(selection_rate AS REAL)) / MAX(CAST(selection_rate AS REAL))
+       -- Four-fifths is on the favourable outcome, not being flagged.
+       MIN(1.0 - CAST(selection_rate AS REAL)) / MAX(1.0 - CAST(selection_rate AS REAL))
                                                   AS disparate_impact_ratio,
        MIN(CAST(FPR AS REAL))                     AS FPR_min,
        MAX(CAST(FPR AS REAL))                     AS FPR_max,
@@ -96,7 +97,7 @@ FROM (
   WHERE s.segment = a.segment AND CAST(s.FPR AS REAL) = a.FPR_min
 ) WHERE g IS NOT w;
 
--- The four-fifths verdict, and the claim that every segment fails it.
+-- The four-fifths verdict, and the claim that every segment passes it.
 SELECT 'FAIL ' || a.segment || '.passes_four_fifths: SQL ' ||
        (a.disparate_impact_ratio >= 0.8) || ', audit.json ' ||
        (json_extract(d.j, '$.segments.' || a.segment || '.passes_four_fifths') = 1)
