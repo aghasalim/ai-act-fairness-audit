@@ -62,11 +62,16 @@ def run(df: pd.DataFrame, segment: str = "product_code",
         raise ValueError(f"not enough usable groups in {segment}")
 
     # Targets for the two equalising policies, taken from the global policy so
-    # all three cost roughly the same review capacity and remain comparable.
-    base = {g: _rates(s["isFraud"].to_numpy().astype(bool),
-                      s["pred"].to_numpy() >= global_thr) for g, s in groups}
-    target_sel = float(np.mean([v["selection_rate"] for v in base.values()]))
-    target_fpr = float(np.mean([v["FPR"] for v in base.values()]))
+    # all three cost the same review capacity and remain comparable. Pooled, not
+    # an unweighted mean over groups: averaging per-group rates let five groups
+    # of very different size vote equally, which set the selection target at
+    # 2.80% against a 1.00% budget. Selection is weighted by group size and FPR
+    # by each group's count of legitimate transactions.
+    flag = {g: s["pred"].to_numpy() >= global_thr for g, s in groups}
+    legit = {g: ~s["isFraud"].to_numpy().astype(bool) for g, s in groups}
+    target_sel = float(np.concatenate(list(flag.values())).mean())
+    target_fpr = float(sum((flag[g] & legit[g]).sum() for g, _ in groups)
+                       / sum(legit[g].sum() for g, _ in groups))
 
     rows = []
     for g, s in groups:

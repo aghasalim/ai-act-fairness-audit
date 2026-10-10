@@ -200,21 +200,34 @@ claim(
   "the spread the shipped policy leaves",
   `leaves a **${P["global threshold"].selection_spread_pp.toFixed(2)}pp** spread in selection rate`
 );
+const fmt = (n) => n.toLocaleString("en-US");
 claim(
-  "what equalising selection rate costs",
-  `closes that to ${P["equal selection rate"].selection_spread_pp.toFixed(2)}pp but more than ` +
-    `doubles the false-positive spread, ${P["global threshold"].FPR_spread_pp.toFixed(2)}pp ` +
-    `to **${P["equal selection rate"].FPR_spread_pp.toFixed(2)}pp**`
+  "the false-positive spread the shipped policy leaves",
+  `and a ${P["global threshold"].FPR_spread_pp.toFixed(2)}pp spread in false-positive rate`
+);
+claim(
+  "what equalising selection rate does to the two spreads",
+  `closes the first to ${P["equal selection rate"].selection_spread_pp.toFixed(2)}pp and ` +
+    `narrows the second to ${P["equal selection rate"].FPR_spread_pp.toFixed(2)}pp`
 );
 assert(
-  "equalising selection rate really does more than double the false-positive spread",
-  P["equal selection rate"].FPR_spread_pp / P["global threshold"].FPR_spread_pp > 2,
+  "equalising selection rate really does narrow the false-positive spread",
+  P["equal selection rate"].FPR_spread_pp < P["global threshold"].FPR_spread_pp,
   `the factor is ${(P["equal selection rate"].FPR_spread_pp / P["global threshold"].FPR_spread_pp).toFixed(3)}`
 );
 claim(
+  "what equalising selection rate costs in fraud caught",
+  `catches **${fmt(P["equal selection rate"].fraud_caught)}** frauds instead of ` +
+    `**${fmt(P["global threshold"].fraud_caught)}**`
+);
+claim(
   "what equalising false-positive rate costs",
-  `closes that gap to ${P["equal FPR"].FPR_spread_pp.toFixed(2)}pp and opens a ` +
-    `${P["equal FPR"].selection_spread_pp.toFixed(2)}pp selection spread instead`
+  `closes that gap to ${P["equal FPR"].FPR_spread_pp.toFixed(2)}pp, leaves a ` +
+    `${P["equal FPR"].selection_spread_pp.toFixed(2)}pp selection spread`
+);
+claim(
+  "fraud caught under equal false-positive rate",
+  `and catches ${fmt(P["equal FPR"].fraud_caught)}.`
 );
 assert(
   "both equalising policies need more than one threshold",

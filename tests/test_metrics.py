@@ -103,6 +103,24 @@ def test_no_policy_equalises_both_at_once():
                    for p in s["policies"].values())
 
 
+def test_equalising_targets_are_pooled_over_groups():
+    """The targets are pooled over groups, so with one group nine times the
+    size of the other the equal selection policy still flags the budget, and
+    the FPR target is the global policy's pooled FPR. An unweighted mean of
+    per-group rates let the small group pull both targets off."""
+    d = frame(n=20000)
+    d = pd.concat([d[d["product_code"] == "A"].iloc[:1000], d[d["product_code"] == "B"]])
+    out, s = impossibility.run(d, "product_code", budget=0.05)
+    legit = out["n"] * (1 - out["base_rate"])
+    for name in ["global threshold", "equal selection rate"]:
+        sub = out[out["policy"] == name]
+        assert (sub["selection_rate"] * sub["n"]).sum() / sub["n"].sum() == pytest.approx(0.05, abs=0.003), name
+    assert s["target_selection"] == pytest.approx(0.05, abs=0.003)
+    g = out[out["policy"] == "global threshold"]
+    pooled_fpr = (g["FPR"] * legit[g.index]).sum() / legit[g.index].sum()
+    assert s["target_fpr"] == pytest.approx(pooled_fpr)
+
+
 def test_group_with_no_fraud_is_kept_because_its_fpr_is_defined():
     """Every flag in a fraud-free group is a false positive. Dropping the group
     for having no positives hides exactly the people the FPR is meant for."""

@@ -15,9 +15,9 @@
 //
 //   1. every published row solves the identity back to its own base rate,
 //   2. the base rates genuinely differ, so the constraint is live,
-//   3. equal selection rate and equal FPR at the published targets would need
-//      a true positive rate above 1 in at least one group, which is not a hard
-//      trade-off but an arithmetic impossibility,
+//   3. equal selection rate and equal FPR at the published targets need a
+//      particular true positive rate in each group, and this model's own
+//      curve, read off the equal FPR rows, misses it in at least one group,
 //   4. each policy in impossibility.csv has the smallest spread on the
 //      criterion it targets and not on the others,
 //   5. only the global threshold gives the same decision to the same score.
@@ -122,25 +122,30 @@ public class Impossibility {
                           pMin, gMin, pMax, gMax, pMax / pMin);
 
         // 3. Equal selection rate and equal FPR together, at the published
-        //    targets, would need TPR above 1 somewhere.
+        //    targets, pin each group's TPR:
         //    selection = p*TPR + (1-p)*FPR, so TPR = FPR + (selection-FPR)/p.
+        //    The equal FPR rows say what TPR the model actually reaches at that
+        //    FPR. When the two disagree, no threshold gives both. Pooled
+        //    targets (1% and 0.11%) need no TPR above 1, so this is a property
+        //    of the model, not pure arithmetic.
         double s = json(doc, "target_selection"), f = json(doc, "target_fpr");
-        String impossibleGroup = null;
-        double impossibleTpr = 0.0;
-        for (Map<String, String> r : pc) {
+        String missGroup = null;
+        double missNeed = 0.0, missHave = 0.0;
+        for (Map<String, String> r : readCsv(root.resolve("reports/impossibility.csv"))) {
+            if (!"equal FPR".equals(r.get("policy"))) continue;
             double p = num(r, "base_rate");
-            double need = f + (s - f) / p;
-            if (need > 1.0 && need > impossibleTpr) {
-                impossibleTpr = need;
-                impossibleGroup = r.get("group");
+            double need = f + (s - f) / p, have = num(r, "TPR");
+            if (Math.abs(need - have) > Math.abs(missNeed - missHave)) {
+                missNeed = need; missHave = have; missGroup = r.get("group");
             }
         }
-        if (impossibleGroup == null)
-            fail("no group needs an impossible TPR, so this check proves nothing here");
+        if (missGroup == null || Math.abs(missNeed - missHave) < 0.01)
+            fail("the model reaches the TPR both targets need in every group, so both could hold");
         else
             System.out.printf("  equalising selection at %.4f%% and FPR at %.4f%% at once would"
-                              + " need product %s to catch %.1f%% of its fraud%n",
-                              s * 100, f * 100, impossibleGroup, impossibleTpr * 100);
+                              + " need product %s to catch %.1f%% of its fraud; at that FPR it"
+                              + " catches %.1f%%%n",
+                              s * 100, f * 100, missGroup, missNeed * 100, missHave * 100);
 
         // 4 and 5. Each policy owns its own criterion in the published table.
         List<Map<String, String>> imp = readCsv(root.resolve("reports/impossibility.csv"));
@@ -181,9 +186,8 @@ public class Impossibility {
             fail("the equal selection rate policy does not have the smallest selection spread");
         if (!(ef[1] < gt[1] && ef[1] < es[1]))
             fail("the equal FPR policy does not have the smallest FPR spread");
-        if (!(es[1] > gt[1]))
-            fail("equalising selection rate did not widen the FPR spread against the shipped"
-                 + " policy, so nothing was traded");
+        if (!(es[1] > 10 * ef[1]))
+            fail("equalising selection rate closed the FPR gap as well, so nothing was traded");
         if (!(ef[0] > es[0]))
             fail("equalising FPR did not widen the selection spread against the equal selection"
                  + " rate policy, so nothing was traded");
