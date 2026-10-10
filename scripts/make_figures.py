@@ -162,7 +162,7 @@ def impossibility(out: Path) -> Path:
          True, "Only one policy flattens selection rate",
          "each line is one product code group"),
         ("FPR", "false-positive rate\n(% of legitimate transactions, log scale)",
-         True, "The FPR gap more than doubles",
+         True, "Only one policy flattens FPR",
          "who is wrongly flagged"),
         ("precision", "precision (% of flags that really are fraud)",
          False, "No policy leaves precision alone",

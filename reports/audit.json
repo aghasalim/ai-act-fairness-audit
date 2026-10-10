@@ -7,7 +7,7 @@
       "n_groups": 3,
       "selection_min": 0.005040832497580459,
       "selection_max": 0.027138886651091598,
-      "disparate_impact_ratio": 0.9777899889007682,
+      "disparate_impact_ratio": 0.9777899889007683,
       "FPR_min": 0.0005910059100591006,
       "FPR_max": 0.0029372116217134467,
       "FPR_ratio": 4.969851522161133,
@@ -23,7 +23,7 @@
       "n_groups": 3,
       "selection_min": 0.0026461089696843423,
       "selection_max": 0.01272285125695079,
-      "disparate_impact_ratio": 0.9898965228111191,
+      "disparate_impact_ratio": 0.989896522811119,
       "FPR_min": 0.00018615307510560608,
       "FPR_max": 0.0014117449425933464,
       "FPR_ratio": 7.5837852358466415,
@@ -39,7 +39,7 @@
       "n_groups": 3,
       "selection_min": 0.0003734615459094895,
       "selection_max": 0.05960825524710278,
-      "disparate_impact_ratio": 0.9407430761164074,
+      "disparate_impact_ratio": 0.9407430761164073,
       "FPR_min": 6.78452901234219e-05,
       "FPR_max": 0.00626157212590473,
       "FPR_ratio": 92.2919205520956,
@@ -71,7 +71,7 @@
       "n_groups": 2,
       "selection_min": 0.0003734615459094895,
       "selection_max": 0.05274987104222446,
-      "disparate_impact_ratio": 0.9476040226209737,
+      "disparate_impact_ratio": 0.9476040226209735,
       "FPR_min": 6.78452901234219e-05,
       "FPR_max": 0.00613395225464191,
       "FPR_ratio": 90.41087809460653,
@@ -119,24 +119,24 @@
   "impossibility": {
     "segment": "product_code",
     "budget": 0.01,
-    "target_selection": 0.028011641596849657,
-    "target_fpr": 0.0028227043114781953,
+    "target_selection": 0.010002144929499555,
+    "target_fpr": 0.001098256400628916,
     "policies": {
       "equal FPR": {
-        "selection_spread_pp": 3.256251229091378,
-        "FPR_spread_pp": 0.009531869883377822,
-        "TPR_spread_pp": 41.00017342548098,
-        "threshold_spread": 0.7618108608810747,
+        "selection_spread_pp": 2.723681932240955,
+        "FPR_spread_pp": 0.004331662350162994,
+        "TPR_spread_pp": 35.87951298847608,
+        "threshold_spread": 0.6930217163852626,
         "same_score_same_decision": false,
-        "fraud_caught": 3273
+        "fraud_caught": 2074
       },
       "equal selection rate": {
-        "selection_spread_pp": 0.010981347990614287,
-        "FPR_spread_pp": 2.2147561987468625,
-        "TPR_spread_pp": 18.03218083233575,
-        "threshold_spread": 0.9167635071707645,
+        "selection_spread_pp": 0.004999028751080312,
+        "FPR_spread_pp": 0.7157467896717845,
+        "TPR_spread_pp": 6.541623307696119,
+        "threshold_spread": 0.8834793171121437,
         "same_score_same_decision": false,
-        "fraud_caught": 4136
+        "fraud_caught": 1904
       },
       "global threshold": {
         "selection_spread_pp": 6.73675505005432,

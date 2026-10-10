@@ -129,12 +129,16 @@ transactions that cost the most when missed.
 
 Equal selection rates, equal false-positive rates, and a calibrated score cannot
 hold together when base rates differ. I built all three policies on product code
-and measured what each one costs. One global threshold leaves a **6.74pp**
-spread in selection rate; equalising selection rate closes that to 0.01pp but
-more than doubles the false-positive spread, 0.91pp to **2.21pp**; equalising
-false-positive rate closes that gap to 0.01pp and opens a 3.26pp selection
-spread instead. Both equalising policies need a different threshold per group,
-so the same score gets a different decision depending on which group you are in.
+and measured what each one costs at the same 1% review budget. One global
+threshold leaves a **6.74pp** spread in selection rate and a 0.91pp spread in
+false-positive rate. Equalising selection rate closes the first to 0.00pp and
+narrows the second to 0.72pp, but it moves reviews from product C onto W, where
+only 29% of flags are fraud, and catches **1,904** frauds instead of **3,962**.
+Equalising false-positive rate at the global policy's pooled 0.11% closes that
+gap to 0.00pp, leaves a 2.72pp selection spread, reviews only 0.58% of
+transactions and catches 2,074. Both equalising policies need a different
+threshold per group, so the same score gets a different decision depending on
+which group you are in.
 
 Choosing between them is a decision about who bears which error, and no amount of
 tuning removes it.

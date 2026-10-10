@@ -110,17 +110,19 @@ SELECT 'FAIL ' || a.segment || ': groups cover ' || a.rows_covered ||
        ' rows, audit.json n is ' || json_extract(d.j, '$.n')
 FROM agg a, doc d WHERE a.rows_covered <> json_extract(d.j, '$.n');
 
--- The impossibility block: the two equalising targets are the mean of the
--- global-threshold policy's per-group rates.
+-- The impossibility block: the two equalising targets are the global-threshold
+-- policy's rates pooled over groups, selection weighted by group size and FPR
+-- by each group's legitimate transactions.
 SELECT 'FAIL impossibility.' || field || ': SQL ' || format('%.17g', got) ||
        ', audit.json ' || format('%.17g', want)
 FROM (
   SELECT 'target_selection' AS field,
-         avg(CAST(selection_rate AS REAL)) AS got,
+         sum(CAST(selection_rate AS REAL) * n) / sum(n) AS got,
          (SELECT CAST(json_extract(j, '$.impossibility.target_selection') AS REAL) FROM doc) AS want
   FROM t_impossibility WHERE policy = 'global threshold'
   UNION ALL
-  SELECT 'target_fpr', avg(CAST(FPR AS REAL)),
+  SELECT 'target_fpr',
+         sum(CAST(FPR AS REAL) * n * (1 - base_rate)) / sum(n * (1 - base_rate)),
          (SELECT CAST(json_extract(j, '$.impossibility.target_fpr') AS REAL) FROM doc)
   FROM t_impossibility WHERE policy = 'global threshold'
 ) WHERE abs(got - want) > 1e-9 * max(1.0, abs(want));

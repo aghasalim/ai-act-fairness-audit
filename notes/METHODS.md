@@ -84,16 +84,24 @@ hold together when base rates differ. That is a theorem
 conversation stops. Base rates here differ 5.7×, so it is a live constraint
 so I built all three deployable policies and measured what each costs:
 
-| policy | selection spread | FPR spread | same score → same decision? |
-|---|---|---|---|
-| one global threshold | 6.74pp | 0.91pp | **yes** |
-| equal selection rate | **0.01pp** | 2.21pp | no |
-| equal FPR | 3.26pp | **0.01pp** | no |
+| policy | selection spread | FPR spread | fraud caught | same score → same decision? |
+|---|---|---|---|---|
+| one global threshold | 6.74pp | 0.91pp | 3,962 | **yes** |
+| equal selection rate | **0.00pp** | 0.72pp | 1,904 | no |
+| equal FPR | 2.72pp | **0.00pp** | 2,074 | no |
 
-Equalising selection rates **more than doubles** the FPR gap (0.91 → 2.21pp)
-the intuitive fix makes the harm-to-innocents disparity worse. And both
-equalising policies require different thresholds per group, so an identical
-score produces a different decision depending on which group you fall in.
+The equalising targets are the global policy's own rates pooled over groups:
+1.00% selection and 0.11% FPR. An earlier version took an unweighted mean of
+the five groups' rates instead, which set them at 2.80% and 0.28%, so those
+policies reviewed almost three times the budget and the table compared
+different amounts of work. With the budget held fixed the picture changes.
+Equalising selection rate no longer widens the FPR gap; it narrows it a little,
+0.91 to 0.72pp. What it costs is fraud caught: it takes reviews off product C,
+where 88% of flags are fraud, and spends them on W, where 29% are, and catches
+less than half as much. Equalising FPR reviews only 0.58% of transactions and
+also catches about half. And both equalising policies require different
+thresholds per group, so an identical score produces a different decision
+depending on which group you fall in.
 
 There is no fair row. Choosing between them is a policy decision about who
 absorbs the error, and the Regulation does not make it for you, Article
