@@ -1,5 +1,3 @@
-<p align="center"><img src="assets/banner.jpg" alt="Line drawing of a balance scale weighing two groups of dots, beside a document with a seal" width="100%"></p>
-
 # Auditing my own fraud model against the EU AI Act
 
 [![ci](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml)
