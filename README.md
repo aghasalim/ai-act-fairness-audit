@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.jpg" alt="Line drawing of a balance scale weighing two groups of dots, beside a document with a seal" width="100%"></p>
+
 # Auditing my own fraud model against the EU AI Act
 
 [![ci](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/ai-act-fairness-audit/actions/workflows/ci.yml)
@@ -22,6 +24,22 @@ number published here from the committed segment tables. CI fails the build if
 any of them disagrees.
 
 ---
+
+<details>
+<summary>Contents</summary>
+
+- [The premise I opened with was wrong](#the-premise-i-opened-with-was-wrong)
+- [What the segments can and cannot support](#what-the-segments-can-and-cannot-support)
+- [Finding 1: everything passes four-fifths, and that says little](#finding-1-everything-passes-four-fifths-and-that-says-little)
+- [Finding 2: the gap worth reading is the one nobody reports](#finding-2-the-gap-worth-reading-is-the-one-nobody-reports)
+- [Finding 3: the best-treated group is the one the model abandons](#finding-3-the-best-treated-group-is-the-one-the-model-abandons)
+- [Finding 4: at matched base rates, expensive fraud is missed twice as often](#finding-4-at-matched-base-rates-expensive-fraud-is-missed-twice-as-often)
+- [Finding 5: the impossibility, on this model rather than in a citation](#finding-5-the-impossibility-on-this-model-rather-than-in-a-citation)
+- [Rebuilding the audit](#rebuilding-the-audit)
+- [Three things this audit does not establish](#three-things-this-audit-does-not-establish)
+- [Sources](#sources)
+
+</details>
 
 ## The premise I opened with was wrong
 
